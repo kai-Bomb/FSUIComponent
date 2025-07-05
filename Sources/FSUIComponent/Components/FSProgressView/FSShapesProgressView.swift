@@ -1,7 +1,11 @@
 import SwiftUI
 
 public struct FSShapesProgressView: View {
-    @State private var scale: CGFloat = 0.1
+    @State private var scale: CGFloat
+    
+    init(scale: CGFloat = 0.1) {
+        self.scale = scale
+    }
     
     public var body: some View {
         GeometryReader { geometry in
