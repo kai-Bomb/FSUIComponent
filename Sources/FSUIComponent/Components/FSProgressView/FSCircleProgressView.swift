@@ -3,7 +3,7 @@ import SwiftUI
 public struct FSCircleProgressView: View {
     @State var scale: CGFloat
     
-    init(scale: CGFloat = 0.1) {
+    public init(scale: CGFloat = 0.1) {
         self.scale = scale
     }
     
