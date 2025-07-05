@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct FSCircleProgressView: View {
+public struct FSCircleProgressView: View {
     @State var scale: CGFloat = 0.1
-    var body: some View {
+    public var body: some View {
         GeometryReader { geometry in
             ForEach(Dot.allCases, id: \.self) { dot in
                 Circle()
