@@ -4,14 +4,22 @@ public extension View {
     func fsAlert(
         isPresented: Binding<Bool>,
         type: AlertType,
-        message: String? = nil
+        message: String? = nil,
+        confirmButtonTitle: String? = nil,
+        confirmAction: (() -> Void)? = nil,
+        discardButtonTitle: String? = nil,
+        discardAction: (() -> Void)? = nil
     ) -> some View {
         self
             .modifier(
                 FSAlertDesignModifier(
                     isPresented: isPresented,
                     type: type,
-                    message: message
+                    message: message,
+                    confirmButtonTitle: confirmButtonTitle,
+                    confirmAction: confirmAction,
+                    discardButtonTitle: discardButtonTitle,
+                    discardAction: discardAction
                 )
             )
     }
@@ -22,15 +30,27 @@ private struct FSAlertDesignModifier: ViewModifier {
     
     let type: AlertType
     let message: String?
-    
+    let confirmButtonTitle: String
+    let confirmAction: (() -> Void)?
+    let discardButtonTitle: String
+    let discardAction: (() -> Void)?
+
     init(
         isPresented: Binding<Bool>,
         type: AlertType,
-        message: String? = nil
+        message: String? = nil,
+        confirmButtonTitle: String?,
+        confirmAction: (() -> Void)?,
+        discardButtonTitle: String?,
+        discardAction: (() -> Void)?
     ) {
         self._isPresented = isPresented
         self.type = type
         self.message = message
+        self.confirmButtonTitle = confirmButtonTitle ?? String(localized: .ok)
+        self.confirmAction = confirmAction
+        self.discardButtonTitle = discardButtonTitle ?? String(localized: .cancel)
+        self.discardAction = discardAction
     }
     
     func body(content: Content) -> some View {
@@ -57,19 +77,39 @@ private struct FSAlertDesignModifier: ViewModifier {
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal)
                         }
-                        Button(action: {
-                            isPresented = false
-                        }, label: {
-                            Text("OK")
-                                .foregroundStyle(Color.white)
-                                .frame(height: 40)
-                                .frame(width: 250)
-                                .bold()
-                                .background(
-                                    type.baseColor.clipShape(RoundedRectangle(cornerRadius: 8))
-                                )
-                                .padding()
-                        })
+                        VStack(spacing: 8) {
+                            Button(action: {
+                                confirmAction?()
+                                isPresented = false
+                            }, label: {
+                                Text(confirmButtonTitle)
+                                    .foregroundStyle(Color.white)
+                                    .frame(height: 40)
+                                    .frame(width: 250)
+                                    .bold()
+                                    .background(
+                                        type.baseColor.clipShape(RoundedRectangle(cornerRadius: 8))
+                                    )
+                            })
+
+                            if let discardAction {
+                                Button {
+                                    discardAction()
+                                    isPresented = false
+                                } label: {
+                                    Text(discardButtonTitle)
+                                        .foregroundStyle(type.baseColor)
+                                        .frame(height: 40)
+                                        .frame(width: 250)
+                                        .bold()
+                                        .overlay(
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .stroke(type.baseColor, lineWidth: 2)
+                                            )
+                                }
+                            }
+                        }
+                        .padding()
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 8)
@@ -88,49 +128,7 @@ private struct FSAlertDesignModifier: ViewModifier {
     }
 }
 
-private struct SampleView: View {
-    @State private var showAlert1: Bool = false
-    @State private var showAlert2: Bool = false
-    @State private var showAlert3: Bool = false
-    @State private var showAlert4: Bool = false
-    
-    var body: some View {
-        VStack(spacing: 32) {
-            Button("Show Success Alert") {
-                showAlert1 = true
-            }
-            Button("Show Warning Alert") {
-                showAlert2 = true
-            }
-            Button("Show Error Alert") {
-                showAlert3 = true
-            }
-            Button("Show Infomation Alert") {
-                showAlert4 = true
-            }
-        }
-        .fsAlert(
-            isPresented: $showAlert1,
-            type: .success
-        )
-        .fsAlert(
-            isPresented: $showAlert2,
-            type: .warning,
-            message: "This is a warning message"
-        )
-        .fsAlert(
-            isPresented: $showAlert3,
-            type: .error,
-            message: "This is an error message"
-        )
-        .fsAlert(
-            isPresented: $showAlert4,
-            type: .infomaion,
-            message: "This is an info message"
-        )
-    }
+#Preview {
+    FSSamplePreview()
 }
 
-#Preview {
-    SampleView()
-}
