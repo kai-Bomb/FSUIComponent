@@ -76,6 +76,7 @@ private struct FSAlertDesignModifier: ViewModifier {
                                 .font(.subheadline)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal)
+                                .frame(maxWidth: 250)
                         }
                         VStack(spacing: 8) {
                             Button(action: {

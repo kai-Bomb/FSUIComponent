@@ -31,6 +31,7 @@ struct FSSamplePreview: View {
         .fsAlert(
             isPresented: $showAlert1,
             type: .success,
+            message: "This is a very long success message This is a very long success message This is a very long success message",
             discardButtonTitle: "Cancel",
             discardAction: {}
         )
